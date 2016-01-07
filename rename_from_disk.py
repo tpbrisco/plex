@@ -93,6 +93,9 @@ if ( desired_section == '' ) or \
 
 # get sections (aka library) - "Music", "Movies", "TV Shows"
 x = requests.get(sections_url)
+if not x.ok:
+    print "error getting list of Libraries",x.text
+    sys.exit(1)
 if debug: print "library/section lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
 
@@ -130,6 +133,9 @@ if debug: print "Key for \"%s\" is \"%s\"" % (desired_show, show_key)
 
 # now look up the correct season - get all seasons under the show
 x = requests.get(base_url + show_key)
+if not x.ok:
+    print "Error getting list of seasons",x.text
+    sys.exit(1)
 if debug: print "Season lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
 
@@ -158,6 +164,9 @@ if debug: print "Key for \"%s\" is \"%s\"" % (desired_season, season_key)
 
 # finally, look up episode names
 x = requests.get(base_url + season_key)
+if not x.ok:
+    print "Error getting list of episodes",x.text
+    sys.exit(1)
 if debug: print "Episode lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
 
