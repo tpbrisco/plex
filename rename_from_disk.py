@@ -53,7 +53,7 @@ def tv_parse(fname):
     return (show_title, epi_info, '', descr)
 
 # constants
-base_url = 'http://localhost:32400'
+base_url = 'http://plex:32400'
 sections_url = base_url + '/library/sections/all'
 
 # command line options
@@ -110,6 +110,9 @@ if debug: print "Desired section \"%s\" key:%s" % (desired_section, section_key)
 
 # now look through all "TV Shows"
 x = requests.get(base_url + '/library/sections/' + section_key + '/all')
+if not x.ok:
+    print >>stderr, x.text
+    sys.exit(1)
 if debug: print "TV Show lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
 
@@ -130,9 +133,20 @@ x = requests.get(base_url + show_key)
 if debug: print "Season lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
 
+season_dict = resp_dict['MediaContainer']['Directory']
+# Ensure that returned types are consistent - season_dict should be a list
+# See full commentary around "Messiness from here." down below
+if type(season_dict) == collections.OrderedDict:
+    season_dict = [ season_dict ]
+elif type(resp_dict) == list:
+    pass  # things are fine
+else:
+    print >>stderr, "Unknown type of response for Season request",type(resp_dict)
+    sys.exit(1)
+
 # desired_season = "Season 1"
 season_key = ''
-for ordered_d in resp_dict['MediaContainer']['Directory']:
+for ordered_d in season_dict:
     xml_dict = dict(ordered_d)
     if xml_dict['@title'] == desired_season:
         season_key = xml_dict['@key']
