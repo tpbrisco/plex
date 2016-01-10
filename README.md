@@ -22,3 +22,7 @@ option flags: "-d" for debugging, "-D" for "don't do" - process and
 
 examples:
 	rename_from_disk.py -l 'TV Shows' -t 'Miss Marple' -s 'Season 1'
+
+Credits:
+	Credits to github user "profplump" for his renameFromDisk.pl -
+	which helped me figure out the messy Plex API.
