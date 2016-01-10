@@ -114,7 +114,7 @@ if debug: print "Desired section \"%s\" key:%s" % (desired_section, section_key)
 # now look through all "TV Shows"
 x = requests.get(base_url + '/library/sections/' + section_key + '/all')
 if not x.ok:
-    print >>stderr, x.text
+    print >>sys.stderr, x.text
     sys.exit(1)
 if debug: print "TV Show lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
@@ -144,10 +144,10 @@ season_dict = resp_dict['MediaContainer']['Directory']
 # See full commentary around "Messiness from here." down below
 if type(season_dict) == collections.OrderedDict:
     season_dict = [ season_dict ]
-elif type(resp_dict) == list:
+elif type(season_dict) == list:
     pass  # things are fine
 else:
-    print >>stderr, "Unknown type of response for Season request",type(resp_dict)
+    print >>sys.stderr, "Unknown type of response for Season request",type(season_dict)
     sys.exit(1)
 
 # desired_season = "Season 1"
@@ -184,7 +184,7 @@ if type(resp_dict['MediaContainer']['Video']) == list:
 elif type(resp_dict['MediaContainer']['Video']) == collections.OrderedDict:
     video_dict = [ resp_dict['MediaContainer']['Video'] ] # put it in a list
 else:
-    print >>stderr, "Dictionary for Video type unknown",type(resp_dict['MediaContainer']['Video'])
+    print >>sys.stderr, "Dictionary for Video type unknown",type(resp_dict['MediaContainer']['Video'])
     sys.exit(1)
 
 for ordered_d in video_dict:
@@ -196,13 +196,13 @@ for ordered_d in video_dict:
         md = dict(xd['Media'])
     else:
         # what type?
-        print >>stderr, "Show type unknown",type(xd['Media']),"for video",xd
+        print >>sys.stderr, "Show type unknown",type(xd['Media']),"for video",xd
     if type(md['Part']) == list:
         pd = dict(md['Part'][0])
     elif type(md['Part']) == collections.OrderedDict:
         pd = dict(md['Part'])
     else:
-        print >>stderr, "Show part type unknown",type(md['Part']),"for video",xd
+        print >>sys.stderr, "Show part type unknown",type(md['Part']),"for video",xd
     (show_title, season_no, episode_no, episode_title) = tv_parse(pd['@file'])
     episode_key = xd['@key']
     enc_title = requests.utils.requote_uri(episode_title)
