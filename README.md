@@ -23,6 +23,10 @@ option flags: "-d" for debugging, "-D" for "don't do" - process and
 examples:
 	rename_from_disk.py -l 'TV Shows' -t 'Miss Marple' -s 'Season 1'
 
+"rename_from_disk" can be run either on the local plex server, or any
+network indicated in the "List of networks tha are allowed without
+auth" (settings -> network).
+
 Credits:
 	Credits to github user "profplump" for his renameFromDisk.pl -
 	which helped me figure out the messy Plex API.
