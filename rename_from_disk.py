@@ -176,6 +176,9 @@ resp_dict = xmltodict.parse(x.text)
 # to accomodate this.
 #
 # Determine if the Video object is a list or singleton of OrderedDict
+if debug:
+    vd = resp_dict['MediaContainer']['Video']
+    print "Video dictionary is type",type(vd), "len",len(vd)
 if type(resp_dict['MediaContainer']['Video']) == list:
     video_dict = resp_dict['MediaContainer']['Video']
 elif type(resp_dict['MediaContainer']['Video']) == collections.OrderedDict:
@@ -194,7 +197,12 @@ for ordered_d in video_dict:
     else:
         # what type?
         print >>stderr, "Show type unknown",type(xd['Media']),"for video",xd
-    pd = dict(md['Part'])
+    if type(md['Part']) == list:
+        pd = dict(md['Part'][0])
+    elif type(md['Part']) == collections.OrderedDict:
+        pd = dict(md['Part'])
+    else:
+        print >>stderr, "Show part type unknown",type(md['Part']),"for video",xd
     (show_title, season_no, episode_no, episode_title) = tv_parse(pd['@file'])
     episode_key = xd['@key']
     enc_title = requests.utils.requote_uri(episode_title)
