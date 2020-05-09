@@ -60,8 +60,16 @@ def tv_parse(fname):
     return (title, epi_info, '', descr)
 
 # constants
-BASE_URL = 'http://plex:32400'
+BASE_URL = 'http://plex3:32400'
 SECTIONS_URL = BASE_URL + '/library/sections/all'
+token = os.getenv('PLEX_TOKEN', default=None)
+if token == None:
+    print 'Expected the X-Plex-Token value in PLEX_TOKEN';
+    sys.exit(1)
+
+auth_token = {
+    'X-Plex-Token': token
+}
 
 # command line options
 desired_section = ''
@@ -99,7 +107,7 @@ if (desired_section == '') or \
     usage()
 
 # get sections (aka library) - "Music", "Movies", "TV Shows"
-x = requests.get(SECTIONS_URL)
+x = requests.get(SECTIONS_URL, params=auth_token)
 if not x.ok:
     print "error getting list of Libraries", x.text
     sys.exit(1)
@@ -119,7 +127,7 @@ if section_key == '':
 if debug: print "Desired section \"%s\" key:%s" % (desired_section, section_key)
 
 # now look through all "TV Shows"
-x = requests.get(BASE_URL + '/library/sections/' + section_key + '/all')
+x = requests.get(BASE_URL + '/library/sections/' + section_key + '/all', params=auth_token)
 if not x.ok:
     print >>sys.stderr, x.text
     sys.exit(1)
@@ -139,7 +147,7 @@ if show_key == '':
 if debug: print "Key for \"%s\" is \"%s\"" % (desired_show, show_key)
 
 # now look up the correct season - get all seasons under the show
-x = requests.get(BASE_URL + show_key)
+x = requests.get(BASE_URL + show_key, params=auth_token)
 if not x.ok:
     print "Error getting list of seasons", x.text
     sys.exit(1)
@@ -171,7 +179,7 @@ if season_key == '':
 if debug: print "Key for \"%s\" is \"%s\"" % (desired_season, season_key)
 
 # finally, look up episode names
-x = requests.get(BASE_URL + season_key)
+x = requests.get(BASE_URL + season_key, params=auth_token)
 if not x.ok:
     print "Error getting list of episodes", x.text
     sys.exit(1)
@@ -225,7 +233,7 @@ for ordered_d in video_dict:
     final_url = "%s%s?title=%s&title.locked=1" % \
                 (BASE_URL, episode_key, enc_title)
     if not dont_do:
-        x = requests.api.put(final_url)
+        x = requests.api.put(final_url, params=auth_token)
         print x.request.url
     else:
         print "SKIPPED:", final_url
