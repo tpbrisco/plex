@@ -27,7 +27,7 @@ examples:
 network indicated in the "List of networks tha are allowed without
 auth" (settings -> network).  Set the environment variable PLEX_TOKEN
 to your plex token, and ensure that files are named following the Plex
-convention (<show name> - S0NE0M - <episode-name>).
+convention (\<show name\> - S0NE0M - \<episode-name\>).
 
 Credits:
 	Credits to github user "profplump" for his renameFromDisk.pl -
