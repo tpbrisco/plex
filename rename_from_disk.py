@@ -109,7 +109,7 @@ if (desired_section == '') or \
 # get sections (aka library) - "Music", "Movies", "TV Shows"
 x = requests.get(SECTIONS_URL, params=auth_token)
 if not x.ok:
-    print "error getting list of Libraries", x.text
+    print("error getting list of Libraries", x.text)
     sys.exit(1)
 if debug: print "library/section lookup returns %d bytes" % (len(x.text))
 resp_dict = xmltodict.parse(x.text)
