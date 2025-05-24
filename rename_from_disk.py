@@ -149,9 +149,10 @@ if debug: print "Key for \"%s\" is \"%s\"" % (desired_show, show_key)
 # now look up the correct season - get all seasons under the show
 x = requests.get(BASE_URL + show_key, params=auth_token)
 if not x.ok:
-    print "Error getting list of seasons", x.text
+    print("Error getting list of seasons", x.text)
     sys.exit(1)
-if debug: print "Season lookup returns %d bytes" % (len(x.text))
+if debug:
+    print("Season lookup returns %d bytes" % (len(x.text)))
 resp_dict = xmltodict.parse(x.text)
 
 season_dict = resp_dict['MediaContainer']['Directory']
@@ -181,9 +182,10 @@ if debug: print "Key for \"%s\" is \"%s\"" % (desired_season, season_key)
 # finally, look up episode names
 x = requests.get(BASE_URL + season_key, params=auth_token)
 if not x.ok:
-    print "Error getting list of episodes", x.text
+    print("Error getting list of episodes", x.text)
     sys.exit(1)
-if debug: print "Episode lookup returns %d bytes" % (len(x.text))
+if debug:
+    print("Episode lookup returns %d bytes" % (len(x.text)))
 resp_dict = xmltodict.parse(x.text)
 
 # Messiness from here.
@@ -194,14 +196,14 @@ resp_dict = xmltodict.parse(x.text)
 # Determine if the Video object is a list or singleton of OrderedDict
 if debug:
     vd = resp_dict['MediaContainer']['Video']
-    print "Video dictionary is type", type(vd), "len", len(vd)
+    print("Video dictionary is type", type(vd), "len", len(vd))
 if type(resp_dict['MediaContainer']['Video']) == list:
     video_dict = resp_dict['MediaContainer']['Video']
 elif type(resp_dict['MediaContainer']['Video']) == collections.OrderedDict:
     video_dict = [resp_dict['MediaContainer']['Video']] # put it in a list
 else:
-    print >>sys.stderr, "Dictionary for Video type unknown", \
-        type(resp_dict['MediaContainer']['Video'])
+    print( "Dictionary for Video type unknown", \
+           type(resp_dict['MediaContainer']['Video']), file=sys.stderr)
     sys.exit(1)
 
 for ordered_d in video_dict:
@@ -213,28 +215,28 @@ for ordered_d in video_dict:
         md = dict(xd['Media'])
     else:
         # what type?
-        print >>sys.stderr, "Show type unknown", \
-            type(xd['Media']), "for video", xd
+        print( "Show type unknown", \
+               type(xd['Media']), "for video", xd, file=sys.stderr)
     if type(md['Part']) == list:
         pd = dict(md['Part'][0])
     elif type(md['Part']) == collections.OrderedDict:
         pd = dict(md['Part'])
     else:
-        print >>sys.stderr, "Show part type unknown", \
-            type(md['Part']), "for video", xd
+        print( "Show part type unknown", \
+               type(md['Part']), "for video", xd, file=sys.stderr)
     (show_title, season_no, episode_no, episode_title) = tv_parse(pd['@file'])
     episode_key = xd['@key']
     enc_title = requests.utils.requote_uri(episode_title)
     if debug:
-        print "Title \"%s\" File: \"%s\"" % (xd['@title'], pd['@file'])
-        print "\tDescr: %s" % (episode_title)
-        print "\tKey: %s" % (episode_key)
+        print("Title \"%s\" File: \"%s\"" % (xd['@title'], pd['@file']))
+        print("\tDescr: %s" % (episode_title))
+        print("\tKey: %s" % (episode_key))
     # print "\tPUT %s%s?title=%s" % (BASE_URL, episode_key, enc_title)
     final_url = "%s%s?title=%s&title.locked=1" % \
                 (BASE_URL, episode_key, enc_title)
     if not dont_do:
         x = requests.api.put(final_url, params=auth_token)
-        print x.request.url
+        print(x.request.url)
     else:
-        print "SKIPPED:", final_url
+        print("SKIPPED:", final_url)
     # need to uuencode the title, then do a request.put() with it and args
