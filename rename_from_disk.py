@@ -111,7 +111,8 @@ x = requests.get(SECTIONS_URL, params=auth_token)
 if not x.ok:
     print("error getting list of Libraries", x.text)
     sys.exit(1)
-if debug: print "library/section lookup returns %d bytes" % (len(x.text))
+if debug:
+    print("library/section lookup returns %d bytes" % (len(x.text)))
 resp_dict = xmltodict.parse(x.text)
 
 # look for desired section, and get "key" value for further lookups
@@ -122,16 +123,18 @@ for ordered_d in resp_dict['MediaContainer']['Directory']:
         section_key = xml_dict['@key']
         break
 if section_key == '':
-    print "Couldn't find section key for section \"%s\"" % (desired_section)
+    print("Couldn't find section key for section \"%s\"" % (desired_section))
     sys.exit(1)
-if debug: print "Desired section \"%s\" key:%s" % (desired_section, section_key)
+if debug:
+    print("Desired section \"%s\" key:%s" % (desired_section, section_key))
 
 # now look through all "TV Shows"
 x = requests.get(BASE_URL + '/library/sections/' + section_key + '/all', params=auth_token)
 if not x.ok:
-    print >>sys.stderr, x.text
+    print(x.text, file=sys.stderr)
     sys.exit(1)
-if debug: print "TV Show lookup returns %d bytes" % (len(x.text))
+if debug:
+    print("TV Show lookup returns %d bytes" % (len(x.text)))
 resp_dict = xmltodict.parse(x.text)
 
 # desired_show = 'The Lucy-Desi Comedy Hour'
@@ -142,9 +145,10 @@ for ordered_d in resp_dict['MediaContainer']['Directory']:
         show_key = xml_dict['@key']
         break
 if show_key == '':
-    print "Couldn't find show key for show \"%s\"" % (desired_show)
+    print("Couldn't find show key for show \"%s\"" % (desired_show))
     sys.exit(1)
-if debug: print "Key for \"%s\" is \"%s\"" % (desired_show, show_key)
+if debug:
+    print("Key for \"%s\" is \"%s\"" % (desired_show, show_key))
 
 # now look up the correct season - get all seasons under the show
 x = requests.get(BASE_URL + show_key, params=auth_token)
@@ -163,8 +167,8 @@ if type(season_dict) == collections.OrderedDict:
 elif type(season_dict) == list:
     pass  # things are fine
 else:
-    print >>sys.stderr, "Unknown type of response for Season request", \
-        type(season_dict)
+    print("Unknown type of response for Season request",
+          type(season_dict), file=sys.stderr)
     sys.exit(1)
 
 # desired_season = "Season 1"
@@ -175,9 +179,10 @@ for ordered_d in season_dict:
         season_key = xml_dict['@key']
         break
 if season_key == '':
-    print "Couldn't find season key for season \"%s\"" % (desired_season)
+    print("Couldn't find season key for season \"%s\"" % (desired_season))
     sys.exit(1)
-if debug: print "Key for \"%s\" is \"%s\"" % (desired_season, season_key)
+if debug:
+    print("Key for \"%s\" is \"%s\"" % (desired_season, season_key))
 
 # finally, look up episode names
 x = requests.get(BASE_URL + season_key, params=auth_token)
@@ -202,7 +207,7 @@ if type(resp_dict['MediaContainer']['Video']) == list:
 elif type(resp_dict['MediaContainer']['Video']) == collections.OrderedDict:
     video_dict = [resp_dict['MediaContainer']['Video']] # put it in a list
 else:
-    print( "Dictionary for Video type unknown", \
+    print( "Dictionary for Video type unknown", 
            type(resp_dict['MediaContainer']['Video']), file=sys.stderr)
     sys.exit(1)
 
