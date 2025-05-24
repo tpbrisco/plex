@@ -35,7 +35,7 @@ import xmltodict   # hopefully an easier way to trudge through XML
 # usage() and die
 def usage():
     """Print usage and exit"""
-    print __doc__
+    print(__doc__)
     sys.exit(0)
 
 
