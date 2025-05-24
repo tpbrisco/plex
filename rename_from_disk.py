@@ -53,7 +53,7 @@ def tv_parse(fname):
     try:
         (title, epi_info, descr) = filename.split(' - ', 2)
     except:
-        print "Cannot split fname", fname
+        print("Cannot split fname", fname)
         raise
     title = title.lstrip().rstrip()
     descr = descr.lstrip().rstrip()
@@ -64,7 +64,7 @@ BASE_URL = 'http://plex3:32400'
 SECTIONS_URL = BASE_URL + '/library/sections/all'
 token = os.getenv('PLEX_TOKEN', default=None)
 if token == None:
-    print 'Expected the X-Plex-Token value in PLEX_TOKEN';
+    print ('Expected the X-Plex-Token value in PLEX_TOKEN')
     sys.exit(1)
 
 auth_token = {
@@ -94,12 +94,12 @@ for opt, arg in options:
         dont_do = 1
 
 if debug:
-    print "Arguments:"
-    print "\tlibrary", desired_section
-    print "\tshow title", desired_show
-    print "\tseason", desired_season
-    print "\tdebug", debug
-    print "\tdontdo", dont_do
+    print("Arguments:")
+    print("\tlibrary", desired_section)
+    print("\tshow title", desired_show)
+    print("\tseason", desired_season)
+    print("\tdebug", debug)
+    print("\tdontdo", dont_do)
 
 if (desired_section == '') or \
    (desired_show == '') or \
